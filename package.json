@@ -24,12 +24,13 @@
     "got": "^11.8.1",
     "q": "^1.0.1"
   },
-  "main": "lib/imgur.js",
+  "main": "index.js",
   "bin": {
-    "imgur": "./cli.js"
+    "imgur": "lib/cli.js"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "clean": "eslint cli.js lib/**"
   },
   "devDependencies": {
     "eslint": "^7.20.0",

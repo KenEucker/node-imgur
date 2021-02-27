@@ -1,4 +1,4 @@
-var imgur = require('../lib/imgur.js');
+var imgur = require('../index.js');
 
 describe('setClientId()', function () {
   beforeEach(function () {

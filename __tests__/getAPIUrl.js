@@ -1,4 +1,4 @@
-var imgur = require('../lib/imgur.js');
+var imgur = require('../index.js');
 
 describe('getAPIUrl()', function () {
   test('should return the default API URL, if nothing is set', function () {

@@ -1,4 +1,4 @@
-var imgur = require('../lib/imgur.js');
+var imgur = require('../index.js');
 
 describe('getClientId()', function () {
   test('should return the default client id, if nothing is set', function () {

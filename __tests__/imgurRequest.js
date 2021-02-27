@@ -1,4 +1,4 @@
-var imgur = require('../lib/imgur.js'),
+var imgur = require('../index.js'),
   imgurTestId1 = 'mbgq7nd'; // Kitten
 
 describe('_imgurRequest()', function () {

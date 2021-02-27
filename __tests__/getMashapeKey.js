@@ -1,4 +1,4 @@
-var imgur = require('../lib/imgur.js');
+var imgur = require('../index.js');
 
 describe('getMashapeKey()', function () {
   test('should return the same client that was set', function () {
