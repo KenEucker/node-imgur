@@ -1,29 +1,58 @@
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
-module.exports = {
-  context: path.resolve(__dirname),
+const universalConfig = {
+  entry: {
+    index: path.resolve(__dirname, 'dist', 'esm', 'index.js'),
+  },
   devtool: 'inline-source-map',
-  entry: './src/index.ts',
-  mode: 'development',
+  watchOptions: {
+    aggregateTimeout: 600,
+    ignored: /node_modules/,
+  },
+  plugins: [
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: false,
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, 'dist')],
+    }),
+    new NodePolyfillPlugin({}),
+  ],
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+        test: /\.t|js$/,
+        use: 'babel-loader',
       },
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
     ],
   },
-  plugins: [new NodePolyfillPlugin()],
+  resolve: {
+    extensions: ['.ts', '.js'],
+    fallback: {
+      path: require.resolve('path-browserify'),
+    },
+  },
+  target: 'web',
+  context: path.resolve(__dirname),
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    globalObject: `typeof self !== 'undefined' ? self : this`,
     library: 'imgur',
+    path: path.resolve(__dirname, 'dist', 'umd'),
+    filename: '[name].js',
     libraryTarget: 'umd',
+    libraryExport: 'default',
     scriptType: 'module',
-    uniqueName: 'imgur-api',
+    globalObject: `(() => {
+        if (typeof self !== 'undefined') {
+            return self;
+        } else if (typeof window !== 'undefined') {
+            return window;
+        } else if (typeof global !== 'undefined') {
+            return global;
+        } else {
+            return Function('return this')();
+        }
+      })()`,
     auxiliaryComment: {
       root: 'Root Comment',
       commonjs: 'CommonJS Comment',
@@ -31,10 +60,15 @@ module.exports = {
       amd: 'AMD Comment',
     },
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.jsx', '.js'],
-    fallback: {
-      path: require.resolve('path-browserify'),
-    },
-  },
+};
+
+module.exports = (env, argv) => {
+  if (argv.mode === 'production') {
+    universalConfig.devtool = 'inline-source-map';
+  } else {
+    universalConfig.devtool = 'cheap-module-source-map';
+    universalConfig.mode = 'development';
+  }
+
+  return universalConfig;
 };
